@@ -1,11 +1,28 @@
 import { Injectable } from '@angular/core';
 import { Log } from '../models/Log';
 
+import { Observable, BehaviorSubject, of } from 'rxjs';
+
+// BehaviorSubject class represents a value that changes over time.
+// Observers can subscribe to the subject to receive the last (or initial)
+// value and all subsequent notifications.
+
+// of -> allow us to declare an array as an observable
+
 @Injectable({
   providedIn: 'root',
 })
 export class LogService {
   logs: Log[];
+
+  private logSource = new BehaviorSubject<Log>({
+    id: null,
+    text: null,
+    date: null,
+  });
+
+  selectedLog = this.logSource.asObservable();
+
   constructor() {
     this.logs = [
       {
@@ -26,7 +43,11 @@ export class LogService {
     ];
   }
 
-  getLogs() {
-    return this.logs;
+  getLogs(): Observable<Log[]> {
+    return of(this.logs);
+  }
+
+  setFormLog(log: Log) {
+    this.logSource.next(log);
   }
 }
